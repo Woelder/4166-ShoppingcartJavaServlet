@@ -1,0 +1,16 @@
+table{
+    margin:auto;
+}
+ th, td {
+    border: 1px solid black;
+}
+th, td{
+    padding: .25em;
+}
+.underTable{
+    border: 0px solid black;
+}
+h1{
+
+    margin-top: 5em;
+}
