@@ -5,20 +5,22 @@ import java.text.NumberFormat;
 
 public class Product implements Serializable {
 
+    private String id;
     private String code;
     private String description;
     private double price;
 
     public Product() {
+        id = "";
         code = "";
         description = "";
         price = 0;
     }
-   public Product(String c, String d, String pString) {
-        Double p =Double.parseDouble(pString);
+   public Product(String i,String c, String d, String pString) {
+        id = i;
         code = c;
         description = d;
-        price = p;
+        price = new Double(pString);
       
     }
     public void setCode(String code) {
@@ -27,6 +29,13 @@ public class Product implements Serializable {
 
     public String getCode() {
         return code;
+    }
+      public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public void setDescription(String description) {

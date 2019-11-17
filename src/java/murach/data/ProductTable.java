@@ -7,13 +7,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import shopProj.Product;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class ProductTable {
 
-    static String url = "jdbc:mysql://localhost:3306/phase3";
+    static String url = "jdbc:mysql://localhost:3306/phrase3";
     static String username = "phase3";
     static String password = "123";
 
@@ -40,20 +40,23 @@ public class ProductTable {
         }
     }
 
-    public static List<Product> productList = null;
+   // public static List<Product> productList = null;
 
     public static List<Product> selectProducts() {
+         List<Product> productList = new ArrayList<>();
         try {
             String preparedSQL = "SELECT * FROM products;";
             PreparedStatement statement = connection.prepareStatement(preparedSQL);
             resultset = statement.executeQuery();
 
             while (resultset.next()) {
-                Product product = new Product(resultset.getString("code"),
+                Product product = new Product( resultset.getString("id")
+                        ,resultset.getString("code"),
                         resultset.getString("description"),
                         resultset.getString("price"));
                 productList.add(product);
             }
+            
 
         } catch (SQLException e) {
             System.err.print("Exception in selectProducts @ ProductTable.java");
@@ -62,12 +65,14 @@ public class ProductTable {
         return productList;
     }
 
-    public static Product selectProduct(String productCode) {
+    public static Product selectProduct(String id) { //Changed to ID as we need unique ID
         Product product = new Product();
         try {
-            String preparedSQL = "SELECT code FROM products WHERE code = '" + productCode + "';'";
+            String preparedSQL = "SELECT * FROM products WHERE id = '" + id + "';";
             PreparedStatement statement = connection.prepareStatement(preparedSQL);
             resultset = statement.executeQuery();
+            resultset.next();
+            product.setId(resultset.getString("id"));
             product.setCode(resultset.getString("code"));
             product.setDescription(resultset.getString("description"));
             product.setPrice(resultset.getDouble("price"));
@@ -79,14 +84,14 @@ public class ProductTable {
         return product;
     }
 
-    public static boolean exists(String productCode) {
+    public static boolean exists(String id) {
         boolean found = true;
         try {
-            String preparedSQL = "SELECT code FROM products WHERE code = '" + productCode + "';'";
+            String preparedSQL = "SELECT code FROM products WHERE id = '" + id + "';";
             PreparedStatement statement = connection.prepareStatement(preparedSQL);
             resultset = statement.executeQuery();
-            if (resultset.getString("code") == "") {
-                found = false;
+            if (resultset.getString("id") == "") {
+                found = false; 
             }
 
         } catch (SQLException e) {
@@ -106,10 +111,10 @@ public class ProductTable {
         while(iterator.hasNext()){
             Product product = new Product();
             product = products.get(looper);
-            preparedSQL += "('"+product.getCode()+"','"+product.getDescription()+"','"+product.getPrice()+"');'";
+            preparedSQL += "('"+product.getCode()+"','"+product.getDescription()+"','"+product.getPrice()+"');";
             
         }
-        statement.executeQuery();
+        statement.executeUpdate();
         
         }catch (SQLException e){
             System.err.print("Exception in saveProducts @ productTable.java");
@@ -122,9 +127,9 @@ public class ProductTable {
     public static void insertProduct(Product product) {
         try {
             String preparedSQL = "INSERT INTO products (code,description,price) VALUES ('" + product.getCode() + "','"
-                    + product.getDescription() + "','" + product.getPrice() + "');'";
+                    + product.getDescription() + "','" + product.getPrice() + "');";
             PreparedStatement statement = connection.prepareStatement(preparedSQL);
-            statement.executeQuery();
+            statement.executeUpdate();
 
         } catch (SQLException e) {
             System.err.print("Exception in insertProduct @ ProductTable.java");
@@ -134,8 +139,8 @@ public class ProductTable {
 
     public static void updateProduct(Product product) {
           try {
-            String preparedSQL = "INSERT INTO products (code,description,price) VALUES ('" + product.getCode() + "','"
-                    + product.getDescription() + "','" + product.getPrice() + "');'";
+            String preparedSQL = "UPDATE products  SET code='" + product.getCode() + "',description='"
+                    + product.getDescription() + "',price='" + product.getPrice() + "' WHERE id = '"+ product.getId() +"';";
             PreparedStatement statement = connection.prepareStatement(preparedSQL);
             statement.executeUpdate();
 
@@ -145,9 +150,9 @@ public class ProductTable {
         }
     }
 
-    public static void deleteProduct(Product product) {
+    public static void deleteProduct(String id) {
                  try {
-            String preparedSQL = "DELETE FROM products WHERE code='"+product.getCode()+"')'";
+            String preparedSQL = "DELETE FROM products WHERE id='"+id+"';";
             PreparedStatement statement = connection.prepareStatement(preparedSQL);
             statement.executeUpdate();
 

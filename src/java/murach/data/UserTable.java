@@ -8,7 +8,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class UserTable {
     
-    static String url = "jdbc:mysql://localhost:3306/phase3";
+    static String url = "jdbc:mysql://localhost:3306/phrase3";
     static String username = "phase3";
     static String password = "123";
     

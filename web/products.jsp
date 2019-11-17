@@ -65,6 +65,7 @@
             <h1>Products</h1>
             <table>
                 <tr>
+                    <th>ID</th>
                     <th>Code</th>
                     <th>Description</th>
                     <th>Price</th>
@@ -75,11 +76,12 @@
 
                 <c:forEach items="${items}" var = "product">
                     <tr>
+                        <td><c:out value="${product.id}"/></td>
                         <td><c:out value="${product.code}"/></td>
                         <td><c:out value="${product.description}"/></td>
                         <td><c:out value="${product.price}"/></td>
-                        <td><a href="productManagement?action=addProduct&editProduct=${product.code}">Edit</a></td>
-                        <td><a href="productManagement?action=deleteProduct&delete=${product.code}">Delete</a></td>
+                        <td><a href="productManagement?action=addProduct&editProduct=${product.id}">Edit</a></td>
+                        <td><a href="productManagement?action=deleteProduct&delete=${product.id}">Delete</a></td>
                     </tr>
                 </c:forEach>
 

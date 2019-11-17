@@ -75,6 +75,18 @@
                         <div class="card-body">
                             <h5 class="card-title text-center">Product</h5>
                             <form class="form-signin" action="productManagement?action=addProduct" method="post">
+                                <c:choose>
+                                    <c:when test="${item.id != null}">
+                                
+                                <div class="form-label-group">
+                                    <input type="text" name="Id" id="Id" class="form-control" placeholder="Id" required autofocus value="<c:out value="${item.id}"/>" readonly>
+                                    <label for="Id">ID</label>
+                                </div>
+                                    </c:when>
+                                <c:otherwise>
+                                    <!-- This is so people can add an ID when adding a product as the SQL does that. -->
+                                </c:otherwise>
+                                    </c:choose>
                                 <div class="form-label-group">
                                     <input type="text" name="code" id="code" class="form-control" placeholder="Code" required autofocus value="<c:out value="${item.code}"/>">
                                     <label for="code">Code</label>
@@ -90,8 +102,8 @@
                                 </div>
                                     
                                <c:choose>
-                                    <c:when test="${item.code != null}">
-                                           <button name="oldCode" type="submit" value="<c:out value="${item.code}"/>" class="btn btn-lg btn-grey btn-block text-uppercase">Edit Product</button>
+                                    <c:when test="${item.id != null}">
+                                           <button name="editProduct" type="submit" value="<c:out value="${item.id}"/>" class="btn btn-lg btn-grey btn-block text-uppercase">Edit Product</button>
                                     </c:when>
                                 <c:otherwise>
                                  <button type="submit"  class="btn btn-lg btn-grey btn-block text-uppercase">Add Product</button>

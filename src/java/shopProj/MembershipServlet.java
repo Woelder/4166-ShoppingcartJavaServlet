@@ -103,7 +103,7 @@ public class MembershipServlet extends HttpServlet {
                if(checkPass != null && request.getParameter("inputPassword").equals(checkPass.getPassword())){ //checks if email is in DB and checks the entered password agaist the one in the user object.
                    authed = true;
                    session.setAttribute("username",checkPass.getEmail());
-                   url="/products.jsp";
+                   url="/productManagement?action=displayProducts";
                }
            if(!authed){ //if not authed get error to display on the page
                ArrayList<String> errors = loginErrorCheck(request,users);                                                            

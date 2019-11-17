@@ -88,7 +88,7 @@
                                     <label for="price">Price:</label>
                                 </div>
 
-                                    <a class="btn btn-lg btn-green btn-block text-uppercase" href="productManagement?action=confirmDelete&yes=${product.code}">Yes</a>
+                                    <a class="btn btn-lg btn-green btn-block text-uppercase" href="productManagement?action=confirmDelete&yes=${product.id}">Yes</a>
                                     <a class="btn btn-lg btn-grey btn-block text-uppercase" href="products.jsp">No</a>
 
                             </form>

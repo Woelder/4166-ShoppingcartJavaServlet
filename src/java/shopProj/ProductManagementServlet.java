@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.regex.*;
+import murach.data.ProductTable;
 
 /**
  *
@@ -38,16 +39,16 @@ public class ProductManagementServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         String url = "index.jsp";
         HttpSession session = request.getSession();
         session.removeAttribute("item");
-        ArrayList<Product> itemListMutate = (ArrayList<Product>)session.getAttribute("items"); //gets item list getParameterValues() 
+        ArrayList<Product> itemListMutate = (ArrayList<Product>) session.getAttribute("items"); //gets item list getParameterValues() 
         //get the current action
         String action = request.getParameter("action");
 
         //determine action and set url to appropriate page
-        if (action != null &&session.getAttribute("auth") != null && session.getAttribute("auth").equals(true)) {
+        if (action != null && session.getAttribute("auth") != null && session.getAttribute("auth").equals(true)) {
 
             switch (action) {
                 case "displayProducts":
@@ -56,96 +57,92 @@ public class ProductManagementServlet extends HttpServlet {
                     break;
                 case "addProduct":
                     url = "/product.jsp";
-                    
-                    ArrayList<String> errors = new ArrayList<String>();      
-                    
+
+                    ArrayList<String> errors = new ArrayList<String>();
+                    String Id = request.getParameter("Id");
                     String productCode = request.getParameter("code");
                     String itemDescription = request.getParameter("description");
                     String itemPrice = request.getParameter("price");
-                    
-                    if(productCode != null && itemDescription != null && itemPrice != null ){
-                    if(request.getParameter("oldCode") != null){
-                        //find reference to old code and replce with new 
-                        for(int i = 0; i < itemListMutate.size(); i++){
-                            if(itemListMutate.get(i).getCode().equals(request.getParameter("oldCode"))){
-                                itemListMutate.get(i).setCode(request.getParameter("code"));
-                                itemListMutate.get(i).setDescription(request.getParameter("description"));
-                                itemListMutate.get(i).setPrice(new Double(itemPrice));                              
-                            }
+
+                    if (request.getParameter("editProduct") != null && Id != null && productCode != null && itemDescription != null && itemPrice != null) {
+                        //update goes here
+                        Product test1 = new Product(request.getParameter("Id"), request.getParameter("code"), ProductTable.selectProduct(request.getParameter("editProduct")).getDescription(), request.getParameter("price"));
+                        session.setAttribute("item", test1);
+
+                        if (itemPrice.matches("[+-]?[0-9]+(\\.[0-9]+)?([Ee][+-]?[0-9]+)?") && !(itemDescription.equals(""))) {
                             url = "/products.jsp";
-                        }
-                    }else if(request.getParameter("editProduct") != null){
-                        Product item = new Product();
-                            for(int i = 0; i < itemListMutate.size(); i++){
-                            if(itemListMutate.get(i).getCode().equals(request.getParameter("editProduct"))){
-                                item.setCode(itemListMutate.get(i).getCode());
-                                item.setDescription(itemListMutate.get(i).getDescription());
-                                item.setPrice(itemListMutate.get(i).getPrice());
-                            }
-                            session.setAttribute("item", item);
-                            url = "/products.jsp";
-                        }
-                    } else {
-                    //create product object
-                    boolean doub = false;
-                    Product item = new Product();
-                    item.setCode(productCode);
-                    item.setDescription(itemDescription);
-                    if(itemPrice.matches("[+-]?[0-9]+(\\.[0-9]+)?([Ee][+-]?[0-9]+)?")){
-                                item.setPrice(new Double(itemPrice)); 
-                                doub = true;
-                          }else{
-                                    errors.add("Please only enter number or a decmial in the price");
-                          }
-                    boolean notDupe = true;
-                    if(itemListMutate != null){
-                     for(int i = 0; i < itemListMutate.size(); i++){
-                            if(itemListMutate.get(i).getCode().equals(productCode)){           
-                                    errors.add("Enter a unique productCode");
-                                    notDupe = false;
-                            }}
-                    } 
-                 
-                        if(notDupe && doub){
-                        itemList.add(item);
-                        } else{
-                            if(productCode != null){
-                             
+                            Product toUpdate = new Product(Id, productCode, itemDescription, itemPrice);
+                            ProductTable.updateProduct(toUpdate);
+                        } else {
+
+                            if (productCode != null) {
+
                             } else {
                                 errors.add("Please enter a product code");
                             }
-                            if(itemDescription != null){
-                            
-                            }else{
+                            if (itemDescription != null) {
+
+                            } else {
                                 errors.add("Please enter a product description");
                             }
-                            if(itemDescription != null){
-                             
+                            if (itemDescription != null) {
+
                             } else {
-                             errors.add("Please enter a product description");
+                                errors.add("Please enter a product description");
                             }
-                            
+                            if (itemDescription.equals("")) {
+                                errors.add("Please enter a product description");
+                            }
 
-                            
+                            url = "/product.jsp";
                         }
-                        
-                    }
-                    
-                     
-                    //add item to show the failed add product
-                    
-                                         
-                          
-                     }
+                    } else {
+                        //create product object
+                        boolean doub = false;
+                        Product item = new Product();
+                        item.setCode(productCode);
+                        item.setDescription(itemDescription);
+                        if (itemPrice.matches("[+-]?[0-9]+(\\.[0-9]+)?([Ee][+-]?[0-9]+)?")) {
+                            item.setPrice(new Double(itemPrice));
+                            doub = true;
+                        } else {
+                            errors.add("Please only enter number or a decmial in the price");
+                        }
 
-                       
-                     session.setAttribute("error",errors); 
+                        if (doub) {
+                            // itemList.add(item);
+                            ProductTable.insertProduct(item);
+                        } else {
+                            if (productCode != null) {
+
+                            } else {
+                                errors.add("Please enter a product code");
+                            }
+                            if (itemDescription != null) {
+
+                            } else {
+                                errors.add("Please enter a product description");
+                            }
+                            if (itemDescription != null) {
+
+                            } else {
+                                errors.add("Please enter a product description");
+                            }
+
+                        }
+
+                    }
+
+                    session.setAttribute("error", errors);
+                    break;
+                case "editProduct":
+
                     break;
                 case "displayProduct":
                     url = "/product.jsp";
 
                     break;
-               
+
                 default:
                     url = "/index.jsp";
                     break;
@@ -155,7 +152,7 @@ public class ProductManagementServlet extends HttpServlet {
             url = "/login.jsp";
         }
         //store product list in session
-        session.setAttribute("items", itemList);
+        session.setAttribute("items", ProductTable.selectProducts());
 
         //forward request and respoinse
         getServletContext().getRequestDispatcher(url).forward(request, response);
@@ -177,23 +174,19 @@ public class ProductManagementServlet extends HttpServlet {
         String action = request.getParameter("action");
         String url = "/index.jsp";
         HttpSession session = request.getSession();
-        if ( session.getAttribute("auth") != null && session.getAttribute("auth").equals(true)) {
+        session.removeAttribute("item");
+        if (session.getAttribute("auth") != null && session.getAttribute("auth").equals(true)) {
             switch (action) {
                 case "displayProducts":
                     url = "/products.jsp";
                     break;
                 case "addProduct":
-                    ArrayList<Product> itemListMutate = (ArrayList<Product>)session.getAttribute("items"); //gets item list getParameterValues() 
-                    if(request.getParameter("editProduct") != null){
-                        Product item = new Product();
-                            for(int i = 0; i < itemListMutate.size(); i++){
-                            if(itemListMutate.get(i).getCode().equals(request.getParameter("editProduct"))){
-                                item.setCode(itemListMutate.get(i).getCode());
-                                item.setDescription(itemListMutate.get(i).getDescription());
-                                item.setPrice(itemListMutate.get(i).getPrice());
-                            }
-                            session.setAttribute("item", item);
-                        }}
+
+                    if (request.getParameter("editProduct") != null) {
+
+                        Product test1 = ProductTable.selectProduct(request.getParameter("editProduct"));
+                        session.setAttribute("item", test1);
+                    }
                     url = "/product.jsp";
                     break;
                 case "displayProduct":
@@ -201,33 +194,25 @@ public class ProductManagementServlet extends HttpServlet {
                     break;
                 case "deleteProduct":
                     String pCode = request.getParameter("delete");
-
-                    for (Product p : itemList) {
-                        if (p.getCode().equals(pCode)) {
-                            session.setAttribute("product", p);
-                            url = "/confirmDelete.jsp";
-
-                        }
+                    if (ProductTable.exists(pCode)) {
+                        Product test1 = ProductTable.selectProduct(pCode);
+                        session.setAttribute("product", test1);
+                        url = "/confirmDelete.jsp";
+                         
                     }
                     break;
                 case "confirmDelete":
-                        pCode = request.getParameter("yes");
-                        Iterator<Product> i = itemList.iterator();
-                        while(i.hasNext()) {
-                            Product p = i.next();
-                            if (p.getCode().equals(pCode)) {
-                                i.remove();
-                                session.removeAttribute("items");
-                                session.setAttribute("items", itemList);
-                            }
-                            url = "/products.jsp";
-                        }
+                    pCode = request.getParameter("yes");
+                    ProductTable.deleteProduct(pCode);
+                    url = "/products.jsp";
+
                 default:
                     break;
             }
         } else {
             url = "/login.jsp";
         }
+        session.setAttribute("items", ProductTable.selectProducts());
         getServletContext().getRequestDispatcher(url).forward(request, response);
 
     }
