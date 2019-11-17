@@ -66,7 +66,7 @@ public class ProductManagementServlet extends HttpServlet {
 
                     if (request.getParameter("editProduct") != null && Id != null && productCode != null && itemDescription != null && itemPrice != null) {
                         //update goes here
-                        Product test1 = new Product(request.getParameter("Id"), request.getParameter("code"), ProductTable.selectProduct(request.getParameter("editProduct")).getDescription(), request.getParameter("price"));
+                        Product test1 = new Product(request.getParameter("Id"), request.getParameter("code"), ProductTable.selectProduct(request.getParameter("editProduct")).getDescription(), Double.toString(ProductTable.selectProduct(request.getParameter("editProduct")).getPrice()));
                         session.setAttribute("item", test1);
 
                         if (itemPrice.matches("[+-]?[0-9]+(\\.[0-9]+)?([Ee][+-]?[0-9]+)?") && !(itemDescription.equals(""))) {
@@ -74,6 +74,9 @@ public class ProductManagementServlet extends HttpServlet {
                             Product toUpdate = new Product(Id, productCode, itemDescription, itemPrice);
                             ProductTable.updateProduct(toUpdate);
                         } else {
+                            if(!(itemPrice.matches("[+-]?[0-9]+(\\.[0-9]+)?([Ee][+-]?[0-9]+)?"))){
+                                errors.add("Please enter a valid Price");
+                            }
 
                             if (productCode != null) {
 
@@ -170,6 +173,7 @@ public class ProductManagementServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
 
         String action = request.getParameter("action");
         String url = "/index.jsp";

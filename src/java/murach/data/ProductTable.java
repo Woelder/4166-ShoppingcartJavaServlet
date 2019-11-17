@@ -101,19 +101,21 @@ public class ProductTable {
         return found;
     }
 
-    private static void saveProducts(List<Product> products) {
+    public static void saveProducts(List<Product> products) {
         try{
         Iterator iterator = products.iterator();
         int looper = 0;
-        String preparedSQL = "INSERT INTO products (code,description,price) VALUES";
-        PreparedStatement statement = connection.prepareStatement(preparedSQL);
+        String preparedSQL = "INSERT INTO products (code,description,price) VALUES ";
+        
  
-        while(iterator.hasNext()){
+        while(looper < products.size()){
             Product product = new Product();
-            product = products.get(looper);
-            preparedSQL += "('"+product.getCode()+"','"+product.getDescription()+"','"+product.getPrice()+"');";
+            product = products.get(looper++);
+            preparedSQL += "('"+product.getCode()+"','"+product.getDescription()+"','"+product.getPrice()+"'), ";
             
         }
+        preparedSQL = preparedSQL.substring(0, preparedSQL.length()-2);
+        PreparedStatement statement = connection.prepareStatement(preparedSQL + ";");
         statement.executeUpdate();
         
         }catch (SQLException e){

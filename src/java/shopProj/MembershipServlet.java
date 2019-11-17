@@ -84,9 +84,6 @@ public class MembershipServlet extends HttpServlet {
         HttpSession session = request.getSession();
         session.removeAttribute("username");     
         
-        UserTable.getUsers();
-        UserTable.getUsersMap();
-        
         String url = "/index.jsp";
         
         String action = request.getParameter("action");
